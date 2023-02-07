@@ -1,0 +1,15 @@
+{
+  "name": "promise-implement",
+  "version": "1.0.0",
+  "description": "Javascript promise implement",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --watchAll --noStackTrace"
+  },
+  "repository": "git@github.com:YuChungWang/promise-implement.git",
+  "author": "Charlie Wang <charliewang324@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.4.1"
+  }
+}
