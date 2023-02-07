@@ -2,7 +2,7 @@
   "name": "promise-implement",
   "version": "1.0.0",
   "description": "Javascript promise implement",
-  "main": "index.js",
+  "main": "promise.js",
   "scripts": {
     "test": "jest --watchAll --noStackTrace"
   },
