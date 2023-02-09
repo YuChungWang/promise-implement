@@ -6,6 +6,7 @@ const STATE = {
 
 class myPromise {
   #thenCbs = [];
+  #catchCbs = [];
   #state = STATE.PENDING;
   #value;
 
@@ -49,10 +50,19 @@ class myPromise {
     this.#runCallbacks();
   }
 
-  then(cb) {
-    this.#thenCbs.push(cb);
+  then(thenCb, catchCb) {
+    if (thenCb != null) {
+      this.#thenCbs.push(thenCb);
+    }
+    if (catchCb != null) {
+      this.#catchCbs.push(catchCb);
+    }
 
     this.#runCallbacks();
+  }
+
+  catch(cb) {
+    this.then(undefined, cb);
   }
 }
 
