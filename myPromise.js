@@ -4,15 +4,17 @@ const STATE = {
   PENDING: 'pending'
 };
 
-class myPromise {
+class MyPromise {
   #thenCbs = [];
   #catchCbs = [];
   #state = STATE.PENDING;
   #value;
+  #onSuccessBind = this.#onSuccess.bind(this);
+  #onFailBind = this.#onFail.bind(this);
 
   constructor(cb) {
     try {
-      cb(this.#onSuccess, this.#onFail)
+      cb(this.#onSuccessBind, this.#onFailBind)
     } catch (e) {
       this.#onFail(e);
     }
@@ -51,14 +53,35 @@ class myPromise {
   }
 
   then(thenCb, catchCb) {
-    if (thenCb != null) {
-      this.#thenCbs.push(thenCb);
-    }
-    if (catchCb != null) {
-      this.#catchCbs.push(catchCb);
-    }
+    return new MyPromise((resolve, reject) => {
+      this.#thenCbs.push((result) => {
+        if (thenCb == null) {
+          resolve(result);
+          return;
+        }
 
-    this.#runCallbacks();
+        try {
+          resolve(thenCb(result));
+        } catch (error) {
+          reject(error);
+        }
+      });
+
+      this.#catchCbs.push((result) => {
+        if (catchCb == null) {
+          reject(result);
+          return;
+        }
+
+        try {
+          resolve(catchCb(result));
+        } catch (error) {
+          reject(error);
+        }
+      })
+  
+      this.#runCallbacks();
+    });
   }
 
   catch(cb) {
@@ -66,4 +89,4 @@ class myPromise {
   }
 }
 
-module.exports = myPromise;
+module.exports = MyPromise;
