@@ -39,17 +39,33 @@ class MyPromise {
   }
 
   #onSuccess(value) {
-    if (this.#state !== STATE.PENDING) return;
-    this.#value = value;
-    this.#state = STATE.FULFILLED;
-    this.#runCallbacks();
+    queueMicrotask(() => {      
+      if (this.#state !== STATE.PENDING) return;
+  
+      if (value instanceof MyPromise) {
+        value.then(this.#onSuccessBind, this.#onFailBind);
+        return;
+      }
+  
+      this.#value = value;
+      this.#state = STATE.FULFILLED;
+      this.#runCallbacks();
+    });
   }
 
   #onFail(value) {
-    if (this.#state !== STATE.PENDING) return;
-    this.#value = value;
-    this.#state = STATE.REJECTED;
-    this.#runCallbacks();
+    queueMicrotask(() => {
+      if (this.#state !== STATE.PENDING) return;
+  
+      if (value instanceof MyPromise) {
+        value.then(this.#onSuccessBind, this.#onFailBind);
+        return;
+      }
+  
+      this.#value = value;
+      this.#state = STATE.REJECTED;
+      this.#runCallbacks();
+    });
   }
 
   then(thenCb, catchCb) {
@@ -85,7 +101,20 @@ class MyPromise {
   }
 
   catch(cb) {
-    this.then(undefined, cb);
+    return this.then(undefined, cb);
+  }
+
+  finally(cb) {
+    return this.then(
+      (result) => {
+        cb();
+        return result;
+      },
+      (result) => {
+        cb();
+        throw result;
+      },
+    );
   }
 }
 
