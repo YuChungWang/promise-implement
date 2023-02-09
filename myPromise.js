@@ -61,6 +61,10 @@ class MyPromise {
         value.then(this.#onSuccessBind, this.#onFailBind);
         return;
       }
+
+      if (this.#catchCbs.length === 0) {
+        throw new UncaughtPromiseError();
+      }
   
       this.#value = value;
       this.#state = STATE.REJECTED;
@@ -115,6 +119,14 @@ class MyPromise {
         throw result;
       },
     );
+  }
+}
+
+class UncaughtPromiseError extends Error {
+  constructor(error) {
+    super(error);
+
+    this.stack = `(in promise) ${error.stack}`;
   }
 }
 
